@@ -1,2 +1,2 @@
 # pyright: reportUnusedImport=false
-from . import gui
+from . import gui, pipeline

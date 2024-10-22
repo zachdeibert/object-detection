@@ -1,2 +1,3 @@
 # pyright: reportUnusedImport=false
-from .MainWindow import MainWindow
+from .main_window import main_window
+from .pipeline_list_widget import pipeline_list_widget
