@@ -1,4 +1,5 @@
 import object_detection
+import os
 import PySide6.QtCore
 import PySide6.QtWidgets
 import qdarktheme  # pyright: ignore[reportMissingTypeStubs]
@@ -17,8 +18,23 @@ if __name__ == "__main__":
     )
     parser.addHelpOption()
     parser.addVersionOption()
+
+    config_file_option = PySide6.QtCore.QCommandLineOption(
+        ("c", "config"),
+        "Load a configuration file",
+        "config.json",
+        os.path.join(__file__, os.pardir, "config", "default.json"),
+    )
+    parser.addOption(config_file_option)
+
     parser.process(app)
 
-    window = object_detection.gui.main_window(list(object_detection.pipeline.create()))
-    window.showMaximized()
-    sys.exit(app.exec())
+    config_file = parser.value(config_file_option)
+    config = object_detection.config.config(config_file)
+    with config:
+
+        window = object_detection.gui.main_window(
+            config, list(object_detection.pipeline.create())
+        )
+        window.showMaximized()
+        sys.exit(app.exec())

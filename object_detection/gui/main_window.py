@@ -3,12 +3,15 @@ import PySide6.QtCore
 import PySide6.QtGui
 import PySide6.QtMultimediaWidgets
 import PySide6.QtWidgets
-from .. import pipeline
+from .. import config, pipeline
+from .config_widget import config_widget
 from .pipeline_list_widget import pipeline_list_widget
 
 
 class main_window(PySide6.QtWidgets.QMainWindow):
-    def __init__(self: main_window, pipeline: list[pipeline.pipeline]) -> None:
+    def __init__(
+        self: main_window, config: config.config, pipeline: list[pipeline.pipeline]
+    ) -> None:
         super().__init__()
 
         menu_bar = self.menuBar()
@@ -58,16 +61,29 @@ class main_window(PySide6.QtWidgets.QMainWindow):
         self.setCentralWidget(central_widget)
 
         layout = PySide6.QtWidgets.QGridLayout(central_widget)
+        layout.setColumnStretch(0, 0)
+        layout.setColumnStretch(1, 1)
+        layout.setColumnStretch(2, 1)
+        layout.setRowStretch(0, 0)
+        layout.setRowStretch(1, 1)
+        layout.setRowStretch(2, 0)
         central_widget.setLayout(layout)
 
         pipeline_list = pipeline_list_widget(pipeline, central_widget)
         layout.addWidget(pipeline_list, 0, 0, 1, 1)
 
-        config_widget = PySide6.QtWidgets.QWidget(central_widget)
-        layout.addWidget(config_widget, 1, 0, 2, 1)
+        config_ui_container = PySide6.QtWidgets.QScrollArea(self)
+        config_ui_container.setHorizontalScrollBarPolicy(
+            PySide6.QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff
+        )
+        config_ui_container.setVerticalScrollBarPolicy(
+            PySide6.QtCore.Qt.ScrollBarPolicy.ScrollBarAsNeeded
+        )
+        layout.addWidget(config_ui_container, 1, 0, 2, 1)
 
-        config_layout = PySide6.QtWidgets.QFormLayout(config_widget)
-        config_widget.setLayout(config_layout)
+        config_ui = config_widget(config, config_ui_container)
+        config_ui_container.setWidget(config_ui)
+        config_ui_container.setWidgetResizable(True)
 
         input_video = PySide6.QtMultimediaWidgets.QVideoWidget(central_widget)
         layout.addWidget(input_video, 0, 1, 2, 1)
