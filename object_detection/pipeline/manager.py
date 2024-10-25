@@ -2,7 +2,7 @@ from __future__ import annotations
 import contextlib
 import types
 from .. import config
-from .grayscale import grayscale
+from .background_subtract import background_subtract
 from .pipeline import pipeline
 from .screen_capture import screen_capture
 from .source import source
@@ -30,7 +30,7 @@ class manager(contextlib.AbstractContextManager["manager"]):
         self.__source = screen_capture(config.screen_capture)
         self.__pipeline = [
             self.__source,
-            grayscale(),
+            background_subtract(),
         ]
         self.__recording = None
         for source, sink in zip(self.__pipeline, self.__pipeline[1:]):

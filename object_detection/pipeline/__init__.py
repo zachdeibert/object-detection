@@ -1,5 +1,5 @@
 # pyright: reportUnusedImport=false
-from .grayscale import grayscale
+from .background_subtract import background_subtract
 from .manager import manager
 from .pipeline import pipeline
 from .screen_capture import screen_capture
