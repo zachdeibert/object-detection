@@ -115,10 +115,13 @@ class main_window(PySide6.QtWidgets.QMainWindow):
         dialog.setFileMode(PySide6.QtWidgets.QFileDialog.FileMode.ExistingFile)
         dialog.setViewMode(PySide6.QtWidgets.QFileDialog.ViewMode.Detail)
         if dialog.exec():
-            self.__pipeline_manager.open_playback(dialog.selectedFiles()[0])
-            self.__pipeline.update_names()
-            self.pipeline_selection_changed()
-            self.__video_controls.play()
+            self.start_video_playback(dialog.selectedFiles()[0])
+
+    def start_video_playback(self: main_window, filename: str) -> None:
+        self.__pipeline_manager.open_playback(filename)
+        self.__pipeline.update_names()
+        self.pipeline_selection_changed()
+        self.__video_controls.play()
 
     @PySide6.QtCore.Slot()
     def pipeline_selection_changed(self: main_window) -> None:

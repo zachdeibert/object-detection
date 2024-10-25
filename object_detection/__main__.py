@@ -27,6 +27,11 @@ if __name__ == "__main__":
     )
     parser.addOption(config_file_option)
 
+    video_file_option = PySide6.QtCore.QCommandLineOption(
+        ("i", "video"), "Load a video recording", "video.mp4", ""
+    )
+    parser.addOption(video_file_option)
+
     parser.process(app)
 
     config_file = parser.value(config_file_option)
@@ -35,4 +40,9 @@ if __name__ == "__main__":
 
         window = object_detection.gui.main_window(config, pipeline)
         window.showMaximized()
+
+        video_file = parser.value(video_file_option)
+        if len(video_file) > 0:
+            window.start_video_playback(video_file)
+
         sys.exit(app.exec())
