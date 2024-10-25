@@ -1,13 +1,10 @@
 import typing
-from .dummy import dummy
+from .. import config
+from .grayscale import grayscale
 from .pipeline import pipeline
+from .screen_capture import screen_capture
 
 
-def create() -> typing.Generator[pipeline, None, None]:
-    yield dummy("Video Capture")
-    yield dummy("Stage 1")
-    yield dummy("Stage 2")
-    yield dummy("Stage 3")
-    yield dummy("Stage 4")
-    yield dummy("Stage 5")
-    yield dummy("Final Stage")
+def create(config: config.config) -> typing.Generator[pipeline, None, None]:
+    yield screen_capture(config.screen_capture)
+    yield grayscale()

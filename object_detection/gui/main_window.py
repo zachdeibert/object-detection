@@ -1,14 +1,18 @@
 from __future__ import annotations
 import PySide6.QtCore
 import PySide6.QtGui
-import PySide6.QtMultimediaWidgets
 import PySide6.QtWidgets
 from .. import config, pipeline
 from .config_widget import config_widget
 from .pipeline_list_widget import pipeline_list_widget
+from .video_widget import video_widget
 
 
 class main_window(PySide6.QtWidgets.QMainWindow):
+    __input_video: video_widget
+    __output_video: video_widget
+    __pipeline: pipeline_list_widget
+
     def __init__(
         self: main_window, config: config.config, pipeline: list[pipeline.pipeline]
     ) -> None:
@@ -69,8 +73,9 @@ class main_window(PySide6.QtWidgets.QMainWindow):
         layout.setRowStretch(2, 0)
         central_widget.setLayout(layout)
 
-        pipeline_list = pipeline_list_widget(pipeline, central_widget)
-        layout.addWidget(pipeline_list, 0, 0, 1, 1)
+        self.__pipeline = pipeline_list_widget(pipeline, central_widget)
+        self.__pipeline.selection_changed.connect(self.pipeline_selection_changed)
+        layout.addWidget(self.__pipeline, 0, 0, 1, 1)
 
         config_ui_container = PySide6.QtWidgets.QScrollArea(self)
         config_ui_container.setHorizontalScrollBarPolicy(
@@ -85,17 +90,19 @@ class main_window(PySide6.QtWidgets.QMainWindow):
         config_ui_container.setWidget(config_ui)
         config_ui_container.setWidgetResizable(True)
 
-        input_video = PySide6.QtMultimediaWidgets.QVideoWidget(central_widget)
-        layout.addWidget(input_video, 0, 1, 2, 1)
+        self.__input_video = video_widget(central_widget)
+        layout.addWidget(self.__input_video, 0, 1, 2, 1)
 
-        output_video = PySide6.QtMultimediaWidgets.QVideoWidget(central_widget)
-        layout.addWidget(output_video, 0, 2, 2, 1)
+        self.__output_video = video_widget(central_widget)
+        layout.addWidget(self.__output_video, 0, 2, 2, 1)
 
         media_controls_widget = PySide6.QtWidgets.QWidget(central_widget)
         layout.addWidget(media_controls_widget, 1, 2, 2, 1)
 
         media_controls_layout = PySide6.QtWidgets.QHBoxLayout(media_controls_widget)
         media_controls_widget.setLayout(media_controls_layout)
+
+        self.pipeline_selection_changed()
 
     @PySide6.QtCore.Slot()
     def clear_video_buffer(self: main_window) -> None:
@@ -104,6 +111,11 @@ class main_window(PySide6.QtWidgets.QMainWindow):
     @PySide6.QtCore.Slot()
     def open_video_for_playback(self: main_window) -> None:
         pass
+
+    @PySide6.QtCore.Slot()
+    def pipeline_selection_changed(self: main_window) -> None:
+        self.__input_video.source = self.__pipeline.source_pipeline
+        self.__output_video.source = self.__pipeline.target_pineline
 
     @PySide6.QtCore.Slot()
     def save_video_buffer(self: main_window) -> None:

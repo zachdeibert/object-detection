@@ -21,6 +21,9 @@ class config_widget(PySide6.QtWidgets.QWidget):
         self.setLayout(self.__layout)
 
         self.__layout.addRow(PySide6.QtWidgets.QLabel("Screen Capture", self))
+        config_item_widget(self, "Monitor").integer(
+            config.screen_capture, lambda c: c.monitor, "monitor"
+        ).nonnegative()
         config_item_widget(self, "Top Offset").integer(
             config.screen_capture, lambda c: c.top, "top"
         ).nonnegative()
