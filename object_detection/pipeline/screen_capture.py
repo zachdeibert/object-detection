@@ -17,7 +17,7 @@ class screen_capture(source):
 
     def __init__(self: screen_capture, config: config.sections.screen_capture) -> None:
         self.__config = config
-        super().__init__(30.0)
+        super().__init__(5.0)
 
     def _thread_init(self: screen_capture) -> None:
         self.__mss = mss.mss()

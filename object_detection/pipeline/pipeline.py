@@ -23,8 +23,10 @@ class pipeline(abc.ABC):
         self.__next_id = 0
         self.__subscriptions = {}
 
-    def chain(self: pipeline, next: pipeline) -> None:
-        self.subscribe(lambda source: next.publish(next.process(source)))
+    def chain(
+        self: pipeline, next: pipeline, token: subscription | None = None
+    ) -> None:
+        self.subscribe(lambda source: next.publish(next.process(source)), token)
 
     @abc.abstractmethod
     def process(self: pipeline, source: cv2.typing.MatLike) -> cv2.typing.MatLike:

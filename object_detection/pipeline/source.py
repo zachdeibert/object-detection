@@ -1,6 +1,7 @@
 from __future__ import annotations
 import abc
 import cv2
+import sys
 import threading
 import time
 from .pipeline import pipeline
@@ -78,6 +79,10 @@ class source(pipeline):
                 last = next
                 now = time.time()
                 if now > last + 1 / self.__framerate:
+                    print(
+                        f"[WARN] Image processing running behind; skipping {now - last:.3f} s.",
+                        file=sys.stderr,
+                    )
                     last = now
         finally:
             self._thread_deinit()

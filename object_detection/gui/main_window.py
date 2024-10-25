@@ -50,19 +50,9 @@ class main_window(PySide6.QtWidgets.QMainWindow):
             self,
         )
         save_action.setShortcuts(PySide6.QtGui.QKeySequence.StandardKey.Save)
-        save_action.setStatusTip("Save the current video buffer")
+        save_action.setStatusTip("Record a video file")
         save_action.triggered.connect(self.save_video_buffer)
         file_menu.addAction(save_action)  # pyright: ignore[reportUnknownMemberType]
-
-        save_as_action = PySide6.QtGui.QAction(
-            PySide6.QtGui.QIcon.fromTheme("DocumentSaveAs"),
-            "&Save As",
-            self,
-        )
-        save_as_action.setShortcuts(PySide6.QtGui.QKeySequence.StandardKey.SaveAs)
-        save_as_action.setStatusTip("Save the current video buffer")
-        save_as_action.triggered.connect(self.save_video_buffer_as)
-        file_menu.addAction(save_as_action)  # pyright: ignore[reportUnknownMemberType]
 
         central_widget = PySide6.QtWidgets.QWidget(self)
         self.setCentralWidget(central_widget)
@@ -136,8 +126,14 @@ class main_window(PySide6.QtWidgets.QMainWindow):
 
     @PySide6.QtCore.Slot()
     def save_video_buffer(self: main_window) -> None:
-        pass
-
-    @PySide6.QtCore.Slot()
-    def save_video_buffer_as(self: main_window) -> None:
-        pass
+        dialog = PySide6.QtWidgets.QFileDialog(
+            self,
+            "Save Video",
+            os.path.abspath(os.path.join(__file__, os.pardir, os.pardir, os.pardir)),
+            "Video Files (*.mp4)",
+        )
+        dialog.setAcceptMode(PySide6.QtWidgets.QFileDialog.AcceptMode.AcceptSave)
+        dialog.setFileMode(PySide6.QtWidgets.QFileDialog.FileMode.AnyFile)
+        dialog.setViewMode(PySide6.QtWidgets.QFileDialog.ViewMode.Detail)
+        if dialog.exec():
+            self.__pipeline_manager.record(dialog.selectedFiles()[0])

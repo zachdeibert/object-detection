@@ -7,12 +7,14 @@ from .pipeline import pipeline
 from .screen_capture import screen_capture
 from .source import source
 from .video_playback import video_playback
+from .video_recording import video_recording
 
 
 class manager(contextlib.AbstractContextManager["manager"]):
     __config: config.config
     __pipeline: list[pipeline]
     __source: source
+    __recording: video_recording | None
 
     @property
     def pipeline(self: manager) -> list[pipeline]:
@@ -30,6 +32,7 @@ class manager(contextlib.AbstractContextManager["manager"]):
             self.__source,
             grayscale(),
         ]
+        self.__recording = None
         for source, sink in zip(self.__pipeline, self.__pipeline[1:]):
             source.chain(sink)
 
@@ -46,15 +49,23 @@ class manager(contextlib.AbstractContextManager["manager"]):
 
     def close(self: manager) -> None:
         self.__source.close()
+        if self.__recording is not None:
+            self.__recording.close()
+            self.__recording = None
 
     def open_capture(self: manager) -> None:
-        self.__source.close()
-        self.__source = screen_capture(self.__config.screen_capture)
+        self.__open(screen_capture(self.__config.screen_capture))
+
+    def open_playback(self: manager, filename: str) -> None:
+        self.__open(video_playback(filename))
+
+    def __open(self: manager, source: source) -> None:
+        self.close()
+        self.__source = source
         self.__pipeline[0] = self.__source
         self.__source.chain(self.__pipeline[1])
 
-    def open_playback(self: manager, filename: str) -> None:
-        self.__source.close()
-        self.__source = video_playback(filename)
-        self.__pipeline[0] = self.__source
-        self.__source.chain(self.__pipeline[1])
+    def record(self: manager, filename: str) -> None:
+        if self.__recording is not None:
+            self.__recording.close()
+        self.__recording = video_recording(filename, self.__source)
