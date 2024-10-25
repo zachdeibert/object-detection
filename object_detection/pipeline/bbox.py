@@ -22,10 +22,14 @@ class bbox(pipeline):
     def process(self: bbox, source: cv2.typing.MatLike) -> cv2.typing.MatLike:
         frame = self.__source.copy()
         contour_size = self.__config.contour_size
+        contour_per_y = self.__config.contour_per_y
+        height = source.shape[1]
         for contour in cv2.findContours(
             source, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
         )[0]:
-            if cv2.contourArea(contour) > contour_size:
-                x, y, w, h = cv2.boundingRect(contour)
+            x, y, w, h = cv2.boundingRect(contour)
+            if cv2.contourArea(contour) > contour_size - contour_per_y * (
+                height - (y + h / 2)
+            ):
                 frame = cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 255), 3)
         return frame

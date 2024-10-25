@@ -48,9 +48,12 @@ class config_widget(PySide6.QtWidgets.QWidget):
         config_item_widget(self, "Maximum").integer(
             config.threshold, lambda c: c.maximum, "maximum"
         ).range(0, 256)
-        config_item_widget(self, "Contour").integer(
+        config_item_widget(self, "Contour (Bottom)").integer(
             config.threshold, lambda c: c.contour_size, "contour_size"
         ).nonnegative()
+        config_item_widget(self, "Contour (Slope)").floating(
+            config.threshold, lambda c: c.contour_per_y, "contour_per_y"
+        )
 
         sep = PySide6.QtWidgets.QFrame(self)
         sep.setFrameShape(PySide6.QtWidgets.QFrame.Shape.HLine)

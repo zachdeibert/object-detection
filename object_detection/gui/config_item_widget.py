@@ -39,6 +39,18 @@ class config_item_widget(PySide6.QtWidgets.QLineEdit):
             self.setText(text)
         self.__setter(text)
 
+    def floating(
+        self: config_item_widget,
+        base: T,
+        getter: typing.Callable[[T], float],
+        name: str,
+    ) -> config_item_widget:
+        self.__normalizer = lambda t: str(float(t)) if len(t) > 0 else "0"
+        self.__setter = lambda t: setattr(base, name, float(t))
+        self.__valid_text = str(getter(base))
+        self.setText(self.__valid_text)
+        return self
+
     def integer(
         self: config_item_widget, base: T, getter: typing.Callable[[T], int], name: str
     ) -> config_item_widget:
