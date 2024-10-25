@@ -1,4 +1,5 @@
 from __future__ import annotations
+import os
 import PySide6.QtCore
 import PySide6.QtGui
 import PySide6.QtWidgets
@@ -11,12 +12,14 @@ from .video_widget import video_widget
 class main_window(PySide6.QtWidgets.QMainWindow):
     __input_video: video_widget
     __output_video: video_widget
+    __pipeline_manager: pipeline.manager
     __pipeline: pipeline_list_widget
 
     def __init__(
-        self: main_window, config: config.config, pipeline: list[pipeline.pipeline]
+        self: main_window, config: config.config, pipeline: pipeline.manager
     ) -> None:
         super().__init__()
+        self.__pipeline_manager = pipeline
 
         menu_bar = self.menuBar()
         file_menu = menu_bar.addMenu("&File")
@@ -106,11 +109,25 @@ class main_window(PySide6.QtWidgets.QMainWindow):
 
     @PySide6.QtCore.Slot()
     def clear_video_buffer(self: main_window) -> None:
-        pass
+        self.__pipeline_manager.open_capture()
+        self.__pipeline.update_names()
+        self.pipeline_selection_changed()
 
     @PySide6.QtCore.Slot()
     def open_video_for_playback(self: main_window) -> None:
-        pass
+        dialog = PySide6.QtWidgets.QFileDialog(
+            self,
+            "Open Video",
+            os.path.abspath(os.path.join(__file__, os.pardir, os.pardir, os.pardir)),
+            "Video Files (*.mp4)",
+        )
+        dialog.setAcceptMode(PySide6.QtWidgets.QFileDialog.AcceptMode.AcceptOpen)
+        dialog.setFileMode(PySide6.QtWidgets.QFileDialog.FileMode.ExistingFile)
+        dialog.setViewMode(PySide6.QtWidgets.QFileDialog.ViewMode.Detail)
+        if dialog.exec():
+            self.__pipeline_manager.open_playback(dialog.selectedFiles()[0])
+            self.__pipeline.update_names()
+            self.pipeline_selection_changed()
 
     @PySide6.QtCore.Slot()
     def pipeline_selection_changed(self: main_window) -> None:

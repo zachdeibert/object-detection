@@ -31,17 +31,8 @@ if __name__ == "__main__":
 
     config_file = parser.value(config_file_option)
     config = object_detection.config.config(config_file)
-    with config:
+    with config, object_detection.pipeline.manager(config) as pipeline:
 
-        pipeline = list(object_detection.pipeline.create(config))
-        try:
-            for source, sink in zip(pipeline, pipeline[1:]):
-                source.chain(sink)
-
-            window = object_detection.gui.main_window(config, pipeline)
-            window.showMaximized()
-            sys.exit(app.exec())
-
-        finally:
-            for pipe in pipeline:
-                pipe.close()
+        window = object_detection.gui.main_window(config, pipeline)
+        window.showMaximized()
+        sys.exit(app.exec())

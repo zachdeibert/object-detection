@@ -5,7 +5,7 @@ from .. import pipeline
 
 
 class pipeline_list_widget(PySide6.QtWidgets.QListWidget):
-    __pipeline: list[pipeline.pipeline]
+    __pipeline: pipeline.manager
     __selection_updating: bool
     __selection: list[int]
 
@@ -13,21 +13,21 @@ class pipeline_list_widget(PySide6.QtWidgets.QListWidget):
 
     @property
     def source_pipeline(self: pipeline_list_widget) -> pipeline.pipeline:
-        return self.__pipeline[min(self.__selection)]
+        return self.__pipeline.pipeline[min(self.__selection)]
 
     @property
     def target_pineline(self: pipeline_list_widget) -> pipeline.pipeline:
-        return self.__pipeline[max(self.__selection)]
+        return self.__pipeline.pipeline[max(self.__selection)]
 
     def __init__(
         self: pipeline_list_widget,
-        pipeline: list[pipeline.pipeline],
+        pipeline: pipeline.manager,
         parent: PySide6.QtWidgets.QWidget | None = None,
     ) -> None:
         super().__init__(parent)
         self.__pipeline = pipeline
         self.__selection_updating = False
-        self.addItems([p.name for p in pipeline])
+        self.addItems([p.name for p in pipeline.pipeline])
         self.__selection = [0, self.count() - 1]
         self.setSelectionMode(
             PySide6.QtWidgets.QListWidget.SelectionMode.MultiSelection
@@ -61,3 +61,7 @@ class pipeline_list_widget(PySide6.QtWidgets.QListWidget):
         finally:
             self.__selection_updating = False
         self.selection_changed.emit()
+
+    def update_names(self: pipeline_list_widget) -> None:
+        for item, pipe in enumerate(self.__pipeline.pipeline):
+            self.item(item).setText(pipe.name)

@@ -26,9 +26,6 @@ class pipeline(abc.ABC):
     def chain(self: pipeline, next: pipeline) -> None:
         self.subscribe(lambda source: next.publish(next.process(source)))
 
-    def close(self: pipeline) -> None:
-        pass
-
     @abc.abstractmethod
     def process(self: pipeline, source: cv2.typing.MatLike) -> cv2.typing.MatLike:
         raise NotImplementedError("object_detection.pipeline.pipeline.process")
