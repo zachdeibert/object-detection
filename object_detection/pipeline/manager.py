@@ -6,6 +6,7 @@ from .background_subtract import background_subtract
 from .pipeline import pipeline
 from .screen_capture import screen_capture
 from .source import source
+from .threshold import threshold
 from .video_playback import video_playback
 from .video_recording import video_recording
 
@@ -31,6 +32,7 @@ class manager(contextlib.AbstractContextManager["manager"]):
         self.__pipeline = [
             self.__source,
             background_subtract(),
+            threshold(config.threshold),
         ]
         self.__recording = None
         for source, sink in zip(self.__pipeline, self.__pipeline[1:]):

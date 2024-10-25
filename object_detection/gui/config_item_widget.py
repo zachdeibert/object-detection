@@ -51,3 +51,9 @@ class config_item_widget(PySide6.QtWidgets.QLineEdit):
     def nonnegative(self: config_item_widget) -> config_item_widget:
         self.__validators.append(lambda t: not t.startswith("-"))
         return self
+
+    def range(
+        self: config_item_widget, min_inclusive: float, max_exclusive: float
+    ) -> config_item_widget:
+        self.__validators.append(lambda t: min_inclusive <= float(t) < max_exclusive)
+        return self

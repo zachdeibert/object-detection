@@ -36,3 +36,15 @@ class config_widget(PySide6.QtWidgets.QWidget):
         config_item_widget(self, "Right Offset").integer(
             config.screen_capture, lambda c: c.right, "right"
         ).nonnegative()
+
+        sep = PySide6.QtWidgets.QFrame(self)
+        sep.setFrameShape(PySide6.QtWidgets.QFrame.Shape.HLine)
+        self.__layout.addRow(sep)
+
+        self.__layout.addRow(PySide6.QtWidgets.QLabel("Thresholding", self))
+        config_item_widget(self, "Value").integer(
+            config.threshold, lambda c: c.value, "value"
+        ).range(0, 256)
+        config_item_widget(self, "Maximum").integer(
+            config.threshold, lambda c: c.maximum, "maximum"
+        ).range(0, 256)
