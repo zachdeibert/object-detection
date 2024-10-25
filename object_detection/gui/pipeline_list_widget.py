@@ -28,7 +28,7 @@ class pipeline_list_widget(PySide6.QtWidgets.QListWidget):
         self.__pipeline = pipeline
         self.__selection_updating = False
         self.addItems([p.name for p in pipeline.pipeline])
-        self.__selection = [0, self.count() - 1]
+        self.__selection = [self.count() - 2, self.count() - 1]
         self.setSelectionMode(
             PySide6.QtWidgets.QListWidget.SelectionMode.MultiSelection
         )
