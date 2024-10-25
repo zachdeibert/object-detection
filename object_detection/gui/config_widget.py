@@ -48,3 +48,6 @@ class config_widget(PySide6.QtWidgets.QWidget):
         config_item_widget(self, "Maximum").integer(
             config.threshold, lambda c: c.maximum, "maximum"
         ).range(0, 256)
+        config_item_widget(self, "Contour").integer(
+            config.threshold, lambda c: c.contour_size, "contour_size"
+        ).nonnegative()

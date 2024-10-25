@@ -3,6 +3,7 @@ import contextlib
 import types
 from .. import config
 from .background_subtract import background_subtract
+from .bbox import bbox
 from .opening import opening
 from .pipeline import pipeline
 from .screen_capture import screen_capture
@@ -13,6 +14,7 @@ from .video_recording import video_recording
 
 
 class manager(contextlib.AbstractContextManager["manager"]):
+    __bbox: bbox
     __config: config.config
     __pipeline: list[pipeline]
     __source: source
@@ -28,6 +30,7 @@ class manager(contextlib.AbstractContextManager["manager"]):
 
     def __init__(self: manager, config: config.config) -> None:
         super().__init__()
+        self.__bbox = bbox(config.threshold)
         self.__config = config
         self.__source = screen_capture(config.screen_capture)
         self.__pipeline = [
@@ -35,8 +38,10 @@ class manager(contextlib.AbstractContextManager["manager"]):
             background_subtract(),
             threshold(config.threshold),
             opening(),
+            self.__bbox,
         ]
         self.__recording = None
+        self.__source.subscribe(self.__bbox.process_original)
         for source, sink in zip(self.__pipeline, self.__pipeline[1:]):
             source.chain(sink)
 
@@ -67,6 +72,7 @@ class manager(contextlib.AbstractContextManager["manager"]):
         self.close()
         self.__source = source
         self.__pipeline[0] = self.__source
+        self.__source.subscribe(self.__bbox.process_original)
         self.__source.chain(self.__pipeline[1])
 
     def record(self: manager, filename: str) -> None:

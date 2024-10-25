@@ -1,5 +1,6 @@
 # pyright: reportUnusedImport=false
 from .background_subtract import background_subtract
+from .bbox import bbox
 from .manager import manager
 from .opening import opening
 from .pipeline import pipeline
