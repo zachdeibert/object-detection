@@ -6,6 +6,7 @@ import PySide6.QtWidgets
 from .. import config, pipeline
 from .config_widget import config_widget
 from .pipeline_list_widget import pipeline_list_widget
+from .video_controls_widget import video_controls_widget
 from .video_widget import video_widget
 
 
@@ -14,6 +15,7 @@ class main_window(PySide6.QtWidgets.QMainWindow):
     __output_video: video_widget
     __pipeline_manager: pipeline.manager
     __pipeline: pipeline_list_widget
+    __video_controls: video_controls_widget
 
     def __init__(
         self: main_window, config: config.config, pipeline: pipeline.manager
@@ -89,11 +91,8 @@ class main_window(PySide6.QtWidgets.QMainWindow):
         self.__output_video = video_widget(central_widget)
         layout.addWidget(self.__output_video, 0, 2, 2, 1)
 
-        media_controls_widget = PySide6.QtWidgets.QWidget(central_widget)
-        layout.addWidget(media_controls_widget, 1, 2, 2, 1)
-
-        media_controls_layout = PySide6.QtWidgets.QHBoxLayout(media_controls_widget)
-        media_controls_widget.setLayout(media_controls_layout)
+        self.__video_controls = video_controls_widget(pipeline, central_widget)
+        layout.addWidget(self.__video_controls, 2, 1, 1, 2)
 
         self.pipeline_selection_changed()
 
@@ -102,6 +101,7 @@ class main_window(PySide6.QtWidgets.QMainWindow):
         self.__pipeline_manager.open_capture()
         self.__pipeline.update_names()
         self.pipeline_selection_changed()
+        self.__video_controls.play()
 
     @PySide6.QtCore.Slot()
     def open_video_for_playback(self: main_window) -> None:
@@ -118,6 +118,7 @@ class main_window(PySide6.QtWidgets.QMainWindow):
             self.__pipeline_manager.open_playback(dialog.selectedFiles()[0])
             self.__pipeline.update_names()
             self.pipeline_selection_changed()
+            self.__video_controls.play()
 
     @PySide6.QtCore.Slot()
     def pipeline_selection_changed(self: main_window) -> None:

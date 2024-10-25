@@ -10,8 +10,11 @@ class video_playback(source):
 
     @source.frame.setter
     def frame(self: video_playback, frame: int) -> None:
+        if self.frame == frame:
+            return
         with self.__lock:
             self.__video.set(cv2.CAP_PROP_POS_FRAMES, frame)
+        self.seeked(frame)
 
     @source.name.getter
     def name(self: video_playback) -> str:
