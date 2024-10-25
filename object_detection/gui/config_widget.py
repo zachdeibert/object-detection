@@ -51,3 +51,15 @@ class config_widget(PySide6.QtWidgets.QWidget):
         config_item_widget(self, "Contour").integer(
             config.threshold, lambda c: c.contour_size, "contour_size"
         ).nonnegative()
+
+        sep = PySide6.QtWidgets.QFrame(self)
+        sep.setFrameShape(PySide6.QtWidgets.QFrame.Shape.HLine)
+        self.__layout.addRow(sep)
+
+        self.__layout.addRow(PySide6.QtWidgets.QLabel("Erosion & Dilation", self))
+        config_item_widget(self, "Width").integer(
+            config.morphology, lambda c: c.opening_width, "opening_width"
+        ).nonnegative
+        config_item_widget(self, "Height").integer(
+            config.morphology, lambda c: c.opening_height, "opening_height"
+        ).nonnegative

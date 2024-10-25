@@ -37,7 +37,7 @@ class manager(contextlib.AbstractContextManager["manager"]):
             self.__source,
             background_subtract(),
             threshold(config.threshold),
-            opening(),
+            opening(config.morphology),
             self.__bbox,
         ]
         self.__recording = None
